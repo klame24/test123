@@ -26,8 +26,36 @@ services:
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_USER: postgres  # <-- ИСПОЛЬЗУЕМ СУПЕРПОЛЬЗОВАТЕЛЯ ПО УМОЛЧАНИЮ
-      POSTGRES_PASSWORD: password123 # <-- Зададим пароль
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
       POSTGRES_DB: gometeo
     ports:
       - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  
+  redis:               # НОВЫЙ сервис Redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+  api:                 # НОВЫЙ сервис API
+    build:
+      context: .
+      dockerfile: cmd/api/Dockerfile
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - DB_DSN=postgres://postgres:password123@postgres:5432/gometeo?sslmode=disable
+      - REDIS_ADDR=redis:6379
+      - HTTP_PORT=8080
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
+  redis_data:

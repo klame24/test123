@@ -108,12 +108,8 @@ func (h *ConsumerHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, claim s
 			continue
 		}
 
-		// СОХРАНЕНИЕ В БАЗУ
-		// Используем контекст сессии, чтобы отменить запись, если Kafka отвалилась
 		if err := h.store.Save(sess.Context(), data); err != nil {
 			h.logger.Error("Ошибка записи в БД", "city", data.City, "error", err)
-			// Важный момент: если БД лежит, мы НЕ помечаем сообщение как прочитанное,
-			// чтобы Kafka отдала его нам снова позже.
 			continue
 		}
 

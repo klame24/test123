@@ -20,7 +20,7 @@ const (
 	consumerGroup = "weather_aggregator_group"
 	brokerAddress = "localhost:9092"
 	// Строка подключения: user:password@host:port/dbname
-	dbDSN = "postgres://postgres:password123@127.0.0.1:5432/gometeo?sslmode=disable"
+	dbDSN = "postgres://postgres:password123@127.0.0.1:5433/gometeo?sslmode=disable"
 )
 
 func main() {
